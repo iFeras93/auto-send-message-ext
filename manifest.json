@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "Kick Chat Auto Sender",
+  "version": "1.0",
+  "description": "Automatically send messages to Kick.com chat streams",
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://kick.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://kick.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Kick Chat Auto Sender"
+  },
+   "icons": {
+   "16": "streamer.png",
+   "32": "streamer.png",
+   "48": "streamer.png",
+   "128": "streamer.png"
+ }
+}
