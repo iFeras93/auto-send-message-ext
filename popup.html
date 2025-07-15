@@ -93,6 +93,89 @@
     .interval-controls input {
       width: 60px;
     }
+
+    /* Add this to your popup.css file */
+.interval-section {
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.interval-section h3 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.random-inputs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.random-inputs label {
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.random-inputs input {
+  width: 60px;
+  padding: 4px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.control-section {
+  margin-top: 15px;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+  text-align: center;
+}
+
+.status {
+  margin-top: 10px;
+  padding: 5px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.status.running {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status.stopped {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+button {
+  padding: 8px 12px;
+  margin: 5px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+#startAuto, #startRandomAuto {
+  background-color: #28a745;
+  color: white;
+}
+
+#stopAuto {
+  background-color: #dc3545;
+  color: white;
+}
+
   </style>
 </head>
 <body>
@@ -107,12 +190,28 @@
     
     <div class="section">
       <h3>⚡ Auto Sender</h3>
-      <div class="interval-controls">
-        <label>Interval:</label>
-        <input type="number" id="intervalInput" value="30" min="5" max="300">
-        <span>seconds</span>
-      </div>
+    <!-- Add this to your popup.html file -->
+    <div class="interval-section">
+      <h3>Fixed Interval Mode</h3>
+      <label for="intervalInput">Interval (seconds):</label>
+      <input type="number" id="intervalInput" min="5" value="30">
       <button id="startAuto">Start Auto Send</button>
+    </div>
+
+          <div class="interval-section">
+        <h3>Random Interval Mode</h3>
+        <div class="random-inputs">
+          <label for="minIntervalInput">Min (seconds):</label>
+          <input type="number" id="minIntervalInput" min="5" value="15">
+          
+          <label for="maxIntervalInput">Max (seconds):</label>
+          <input type="number" id="maxIntervalInput" min="5" value="45">
+        </div>
+        <button id="startRandomAuto">Start Random Auto</button>
+      </div>
+
+
+      <hr />
       <button id="stopAuto" class="stop-btn">Stop Auto Send</button>
       <div id="status" class="status stopped">Stopped</div>
     </div>
