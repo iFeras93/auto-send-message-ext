@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Event listeners
   document.getElementById('sendQuickMessage').addEventListener('click', sendQuickMessage);
   document.getElementById('startAuto').addEventListener('click', startAutoSend);
+  document.getElementById('startRandomAuto').addEventListener('click', startRandomAutoSend);
   document.getElementById('stopAuto').addEventListener('click', stopAutoSend);
   document.getElementById('addMessage').addEventListener('click', addMessage);
   document.getElementById('loadDefaults').addEventListener('click', loadDefaultMessages);
@@ -68,6 +69,53 @@ function startAutoSend() {
     }
     
     sendMessageToContent('startAuto', { interval, messages });
+    updateStatus();
+  });
+}
+
+// Start auto send with random intervals
+function startRandomAutoSend() {
+  console.log('startRandomAutoSend called');
+  
+  const minIntervalInput = document.getElementById('minIntervalInput');
+  const maxIntervalInput = document.getElementById('maxIntervalInput');
+  
+  if (!minIntervalInput || !maxIntervalInput) {
+    console.error('Random interval inputs not found');
+    alert('Random interval inputs not found. Please check the HTML structure.');
+    return;
+  }
+  
+  const minInterval = parseInt(minIntervalInput.value) * 1000;
+  const maxInterval = parseInt(maxIntervalInput.value) * 1000;
+  
+  console.log('Min interval:', minInterval, 'Max interval:', maxInterval);
+  
+  // Validation
+  if (minInterval < 5000) {
+    alert('Minimum interval must be at least 5 seconds');
+    return;
+  }
+  
+  if (maxInterval < minInterval) {
+    alert('Maximum interval must be greater than minimum interval');
+    return;
+  }
+  
+  if (maxInterval < 5000) {
+    alert('Maximum interval must be at least 5 seconds');
+    return;
+  }
+
+  chrome.storage.local.get(['messages'], function(result) {
+    const messages = result.messages || [];
+    if (messages.length === 0) {
+      alert('Please add some messages first!');
+      return;
+    }
+    
+    console.log('Sending startRandomAuto to content script');
+    sendMessageToContent('startRandomAuto', { minInterval, maxInterval, messages });
     updateStatus();
   });
 }
@@ -121,7 +169,6 @@ function loadMessages() {
       return;
     }
     
-
     messages.forEach((message, index) => {
       const messageItem = document.createElement('div');
       messageItem.className = 'message-item';
@@ -159,10 +206,22 @@ function updateStatus() {
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
     if (tabs[0] && tabs[0].url && tabs[0].url.includes('kick.com')) {
       chrome.tabs.sendMessage(tabs[0].id, {action: 'getStatus'}, function(response) {
+        if (chrome.runtime.lastError) {
+          console.log('Error getting status:', chrome.runtime.lastError);
+          const statusElement = document.getElementById('status');
+          statusElement.textContent = 'Content script not ready';
+          statusElement.className = 'status stopped';
+          return;
+        }
+        
         if (response) {
           const statusElement = document.getElementById('status');
           if (response.running) {
-            statusElement.textContent = `Running (${response.interval/1000}s interval)`;
+            if (response.isRandom) {
+              statusElement.textContent = `Running Random Mode (${response.minInterval/1000}s - ${response.maxInterval/1000}s)`;
+            } else {
+              statusElement.textContent = `Running Fixed Mode (${response.interval/1000}s interval)`;
+            }
             statusElement.className = 'status running';
           } else {
             statusElement.textContent = 'Stopped';
@@ -178,6 +237,7 @@ function updateStatus() {
   });
 }
 
+
 // Send message to content script
 function sendMessageToContent(action, data = {}) {
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
@@ -188,6 +248,10 @@ function sendMessageToContent(action, data = {}) {
     }
   });
 }
+
+// Update status periodically
+setInterval(updateStatus, 2000);
+
 
 // Make removeMessage available globally
 window.removeMessage = removeMessage;

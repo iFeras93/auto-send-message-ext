@@ -1,241 +1,177 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <style>
-    body {
-      width: 350px;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-    }
-    .container {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .section {
-      border: 1px solid #ddd;
-      padding: 15px;
-      border-radius: 5px;
-    }
-    .section h3 {
-      margin-top: 0;
-      color: #333;
-    }
-    input, textarea, button, select {
-      padding: 8px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-    }
-    button {
-      background-color: #4CAF50;
-      color: white;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-    button:disabled {
-      background-color: #cccccc;
-      cursor: not-allowed;
-    }
-    .stop-btn {
-      background-color: #f44336;
-    }
-    .stop-btn:hover {
-      background-color: #da190b;
-    }
-    .status {
-      padding: 10px;
-      border-radius: 4px;
-      margin-top: 10px;
-      text-align: center;
-      font-weight: bold;
-    }
-    .status.running {
-      background-color: #d4edda;
-      color: #155724;
-    }
-    .status.stopped {
-      background-color: #f8d7da;
-      color: #721c24;
-    }
-    .message-list {
-      max-height: 150px;
-      overflow-y: auto;
-      border: 1px solid #ddd;
-      padding: 10px;
-      background-color: #f9f9f9;
-    }
-    .message-item {
-      padding: 5px;
-      margin: 2px 0;
-      background-color: white;
-      border-radius: 3px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .remove-btn {
-      background-color: #ff4444;
-      color: white;
-      border: none;
-      padding: 2px 6px;
-      border-radius: 3px;
-      cursor: pointer;
-      font-size: 12px;
-    }
-    .interval-controls {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-    .interval-controls input {
-      width: 60px;
-    }
-
-    /* Add this to your popup.css file */
-.interval-section {
-  margin-bottom: 15px;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  background-color: #f9f9f9;
-}
-
-.interval-section h3 {
-  margin: 0 0 10px 0;
-  font-size: 14px;
-  color: #333;
-}
-
-.random-inputs {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
-  align-items: center;
-}
-
-.random-inputs label {
-  font-size: 12px;
-  white-space: nowrap;
-}
-
-.random-inputs input {
-  width: 60px;
-  padding: 4px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-}
-
-.control-section {
-  margin-top: 15px;
-  padding: 10px;
-  border-top: 1px solid #ddd;
-  text-align: center;
-}
-
-.status {
-  margin-top: 10px;
-  padding: 5px;
-  border-radius: 3px;
-  font-size: 12px;
-  font-weight: bold;
-}
-
-.status.running {
-  background-color: #d4edda;
-  color: #155724;
-}
-
-.status.stopped {
-  background-color: #f8d7da;
-  color: #721c24;
-}
-
-button {
-  padding: 8px 12px;
-  margin: 5px;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  font-size: 12px;
-}
-
-button:hover {
-  opacity: 0.8;
-}
-
-#startAuto, #startRandomAuto {
-  background-color: #28a745;
-  color: white;
-}
-
-#stopAuto {
-  background-color: #dc3545;
-  color: white;
-}
-
-  </style>
+    <style>
+        body {
+            width: 350px;
+            padding: 10px;
+            font-family: Arial, sans-serif;
+        }
+        
+        .section {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .section h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .input-group {
+            margin-bottom: 10px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+        
+        .random-inputs {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .random-inputs .input-group {
+            flex: 1;
+        }
+        
+        button {
+            padding: 8px 12px;
+            margin: 5px 0;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            width: 100%;
+        }
+        
+        .start-btn {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .stop-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .status {
+            margin-top: 10px;
+            padding: 5px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .status.running {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status.stopped {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .message-list {
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 5px;
+            margin-top: 10px;
+        }
+        
+        .message-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px;
+            margin: 2px 0;
+            background-color: #f9f9f9;
+            border-radius: 3px;
+        }
+        
+        .remove-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+    </style>
 </head>
 <body>
-
-  <div class="container">
-
+    <!-- Quick Message Section -->
     <div class="section">
-      <h3>🎯 Quick Send</h3>
-      <input type="text" id="quickMessage" placeholder="Type a message...">
-      <button id="sendQuickMessage">Send Now</button>
-    </div>
-    
-    <div class="section">
-      <h3>⚡ Auto Sender</h3>
-    <!-- Add this to your popup.html file -->
-    <div class="interval-section">
-      <h3>Fixed Interval Mode</h3>
-      <label for="intervalInput">Interval (seconds):</label>
-      <input type="number" id="intervalInput" min="5" value="30">
-      <button id="startAuto">Start Auto Send</button>
+        <h3>Quick Message</h3>
+        <div class="input-group">
+            <input type="text" id="quickMessage" placeholder="Type your message...">
+        </div>
+        <button id="sendQuickMessage" class="start-btn">Send Now</button>
     </div>
 
-          <div class="interval-section">
+    <!-- Fixed Interval Section -->
+    <div class="section">
+        <h3>Fixed Interval Mode</h3>
+        <div class="input-group">
+            <label for="intervalInput">Interval (seconds):</label>
+            <input type="number" id="intervalInput" min="5" value="30">
+        </div>
+        <button id="startAuto" class="start-btn">Start Fixed Auto</button>
+    </div>
+
+    <!-- Random Interval Section -->
+    <div class="section">
         <h3>Random Interval Mode</h3>
         <div class="random-inputs">
-          <label for="minIntervalInput">Min (seconds):</label>
-          <input type="number" id="minIntervalInput" min="5" value="15">
-          
-          <label for="maxIntervalInput">Max (seconds):</label>
-          <input type="number" id="maxIntervalInput" min="5" value="45">
+            <div class="input-group">
+                <label for="minIntervalInput">Min (seconds):</label>
+                <input type="number" id="minIntervalInput" min="5" value="15">
+            </div>
+            <div class="input-group">
+                <label for="maxIntervalInput">Max (seconds):</label>
+                <input type="number" id="maxIntervalInput" min="5" value="45">
+            </div>
         </div>
-        <button id="startRandomAuto">Start Random Auto</button>
-      </div>
-
-
-      <hr />
-      <button id="stopAuto" class="stop-btn">Stop Auto Send</button>
-      <div id="status" class="status stopped">Stopped</div>
+        <button id="startRandomAuto" class="start-btn">Start Random Auto</button>
     </div>
-    
+
+    <!-- Control Section -->
     <div class="section">
-      <h3>📝 Message Management</h3>
-      <textarea id="newMessage" placeholder="Add new message..." rows="2"></textarea>
-      <button id="addMessage">Add Message</button>
-      <div class="message-list" id="messageList"></div>
+        <button id="stopAuto" class="stop-btn">Stop Auto Send</button>
+        <div id="status" class="status stopped">Stopped</div>
     </div>
-    
+
+    <!-- Message Management Section -->
     <div class="section">
-      <h3>🔧 Actions</h3>
-      <button id="loadDefaults">Load Default Messages</button>
-      <button id="clearAll">Clear All Messages</button>
+        <h3>Message Management</h3>
+        <div class="input-group">
+            <input type="text" id="newMessage" placeholder="Add new message...">
+        </div>
+        <button id="addMessage" class="start-btn">Add Message</button>
+        <button id="loadDefaults" class="start-btn">Load Default Messages</button>
+        <button id="clearAll" class="stop-btn">Clear All Messages</button>
+        
+        <div id="messageList" class="message-list"></div>
     </div>
 
-        <div class="section">
-    
-      <span><strong>Developed By <a href="https://iferas93.com" target="_blank">iFeras93</a></strong></span>
-      </div>
-
-  </div>
-  
-  <script src="popup.js"></script>
+    <script src="popup.js"></script>
 </body>
 </html>

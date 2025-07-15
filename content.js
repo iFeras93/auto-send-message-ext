@@ -2,8 +2,12 @@
 
 // Variables
 let messageInterval = null;
+let messageTimeout = null;
 let currentMessages = [];
 let currentIntervalMs = 30000; // 30 seconds
+let isRandomMode = false;
+let minIntervalMs = 15000;
+let maxIntervalMs = 45000;
 
 // Initialize
 console.log('Kick Chat Auto Sender! By iFeras93');
@@ -15,15 +19,21 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       sendKickMessage(request.message);
       break;
     case 'startAuto':
-      startRandomMessages(request.interval, request.messages);
+      startFixedMessages(request.interval, request.messages);
+      break;
+    case 'startRandomAuto':
+      startRandomMessages(request.minInterval, request.maxInterval, request.messages);
       break;
     case 'stopAuto':
       stopRandomMessages();
       break;
     case 'getStatus':
       sendResponse({
-        running: messageInterval !== null,
-        interval: currentIntervalMs
+        running: messageInterval !== null || messageTimeout !== null,
+        interval: currentIntervalMs,
+        isRandom: isRandomMode,
+        minInterval: minIntervalMs,
+        maxInterval: maxIntervalMs
       });
       break;
   }
@@ -252,16 +262,22 @@ function getRandomMessage() {
   return currentMessages[randomIndex];
 }
 
-// Start random messages
-function startRandomMessages(intervalMs, messages) {
-  if (messageInterval) {
+// Get random interval between min and max
+function getRandomInterval(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// Start fixed interval messages (original function)
+function startFixedMessages(intervalMs, messages) {
+  if (messageInterval || messageTimeout) {
     stopRandomMessages();
   }
   
   currentMessages = messages;
   currentIntervalMs = intervalMs;
+  isRandomMode = false;
   
-  console.log(`Starting random messages every ${intervalMs}ms`);
+  console.log(`Starting fixed interval messages every ${intervalMs}ms`);
   
   // Wait for Lexical to be ready, then start
   waitForLexical(() => {
@@ -271,7 +287,7 @@ function startRandomMessages(intervalMs, messages) {
       sendKickMessage(firstMessage);
     }
     
-    // Set up interval
+    // Set up fixed interval
     messageInterval = setInterval(() => {
       const message = getRandomMessage();
       if (message) {
@@ -281,13 +297,67 @@ function startRandomMessages(intervalMs, messages) {
   });
 }
 
-// Stop random messages
+// Start random interval messages (new function)
+function startRandomMessages(minInterval, maxInterval, messages) {
+  if (messageInterval || messageTimeout) {
+    stopRandomMessages();
+  }
+  
+  currentMessages = messages;
+  minIntervalMs = minInterval;
+  maxIntervalMs = maxInterval;
+  isRandomMode = true;
+  
+  console.log(`Starting random interval messages between ${minInterval}ms and ${maxInterval}ms`);
+  
+  // Wait for Lexical to be ready, then start
+  waitForLexical(() => {
+    // Send first message immediately
+    const firstMessage = getRandomMessage();
+    if (firstMessage) {
+      sendKickMessage(firstMessage);
+    }
+    
+    // Schedule next random message
+    scheduleNextRandomMessage();
+  });
+}
+
+// Schedule the next message with random interval
+function scheduleNextRandomMessage() {
+  if (!isRandomMode || currentMessages.length === 0) return;
+  
+  const randomInterval = getRandomInterval(minIntervalMs, maxIntervalMs);
+  currentIntervalMs = randomInterval; // Update for status display
+  
+  console.log(`Next message scheduled in ${randomInterval}ms`);
+  
+  messageTimeout = setTimeout(() => {
+    const message = getRandomMessage();
+    if (message) {
+      sendKickMessage(message);
+    }
+    
+    // Schedule the next message
+    scheduleNextRandomMessage();
+  }, randomInterval);
+}
+
+// Stop random messages (updated to handle both modes)
 function stopRandomMessages() {
   if (messageInterval) {
     clearInterval(messageInterval);
     messageInterval = null;
-    console.log('Random messages stopped.');
+    console.log('Fixed interval messages stopped.');
   }
+  
+  if (messageTimeout) {
+    clearTimeout(messageTimeout);
+    messageTimeout = null;
+    console.log('Random interval messages stopped.');
+  }
+  
+  isRandomMode = false;
 }
 
 // Clean up when page unloads
