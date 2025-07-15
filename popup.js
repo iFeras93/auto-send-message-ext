@@ -121,14 +121,24 @@ function loadMessages() {
       return;
     }
     
+
     messages.forEach((message, index) => {
       const messageItem = document.createElement('div');
       messageItem.className = 'message-item';
       messageItem.innerHTML = `
         <span>${message}</span>
-        <button class="remove-btn" onclick="removeMessage(${index})">&times;</button>
+        <button class="remove-btn" data-index="${index}">&times;</button>
       `;
       messageList.appendChild(messageItem);
+    });
+    
+    // Add event listeners to remove buttons after they're created
+    const removeButtons = messageList.querySelectorAll('.remove-btn');
+    removeButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const index = parseInt(this.getAttribute('data-index'));
+        removeMessage(index);
+      });
     });
   });
 }
